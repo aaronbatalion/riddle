@@ -14,3 +14,15 @@ CREATE TABLE `people` (
   `birthday` datetime NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `things`;
+
+CREATE TABLE `things` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `short_description` varchar(500) NOT NULL,
+  `color` varchar(30) NOT NULL,
+  `description` mediumblob, 
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

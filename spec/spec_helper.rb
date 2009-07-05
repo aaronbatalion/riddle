@@ -1,9 +1,8 @@
 $:.unshift File.dirname(__FILE__) + '/../lib'
-
+require 'rubygems'
 require 'riddle'
 require 'spec'
 require 'spec/sphinx_helper'
-
 Spec::Runner.configure do |config|
   sphinx = SphinxHelper.new
   sphinx.setup_mysql

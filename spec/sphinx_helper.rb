@@ -25,7 +25,7 @@ class SphinxHelper
     server = Mysql.new @host, @username, @password
 
     unless server.list_dbs.include?("riddle_sphinx_spec")
-      server.create_db "riddle_sphinx_spec"
+      server.query "create database riddle_sphinx_spec;"
     end
 
     server.query "USE riddle_sphinx_spec;"

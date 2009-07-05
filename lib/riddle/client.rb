@@ -37,7 +37,7 @@ module Riddle
     }
     
     Versions = {
-      :search   => 0x113, # VER_COMMAND_SEARCH
+      :search   => 0x117, # VER_COMMAND_SEARCH
       :excerpt  => 0x100, # VER_COMMAND_EXCERPT
       :update   => 0x101, # VER_COMMAND_UPDATE
       :keywords => 0x100  # VER_COMMAND_KEYWORDS
@@ -82,6 +82,8 @@ module Riddle
       :ordinal    => 3, # SPH_ATTR_ORDINAL
       :bool       => 4, # SPH_ATTR_BOOL
       :float      => 5, # SPH_ATTR_FLOAT
+      :bigint     => 6, # SPH_ATTR_BIGINT
+      :string     => 7, # SPH_ATTR_STRING
       :multi      => 0x40000000 # SPH_ATTR_MULTI
     }
     
@@ -143,6 +145,7 @@ module Riddle
       @index_weights  = {}
       @rank_mode      = :proximity_bm25
       @max_query_time = 0
+      @select_list    = "*"
       # string keys are field names, integer values are weightings
       @field_weights  = {}
       @timeout        = 0
@@ -282,8 +285,8 @@ module Riddle
     # related warning, it will be under the <tt>:warning</tt> key. Fatal errors
     # will be described under <tt>:error</tt>.
     #
-    def query(search, index = '*', comments = '')
-      @queue << query_message(search, index, comments)
+    def query(search, index = '*', comments = '', select_list = '*')
+      @queue << query_message(search, index, comments,select_list)
       self.run.first
     end
     
@@ -476,7 +479,6 @@ module Riddle
         response
       when Statuses[:warning]
         length = response[0, 4].unpack('N*').first
-        puts response[4, length]
         response[4 + length, response.length - 4 - length]
       when Statuses[:error], Statuses[:retry]
         raise ResponseError, "searchd error (status: #{status}): #{response[4, response.length - 4]}"
@@ -486,7 +488,7 @@ module Riddle
     end
     
     # Generation of the message to send to Sphinx for a search.
-    def query_message(search, index, comments = '')
+    def query_message(search, index, comments = '', select_list = "*")
       message = Message.new
       
       # Mode, Limits, Sort Mode
@@ -549,6 +551,12 @@ module Riddle
       
       message.append_string comments
       
+      #Overrides  FIXME implement later
+      message.append_int 0  
+      
+      message.append_int select_list.length
+      message.append_string select_list
+      
       message.to_s
     end
     
@@ -609,8 +617,9 @@ module Riddle
       type -= AttributeTypes[:multi] if is_multi = type > AttributeTypes[:multi]
       
       case type
-      when AttributeTypes[:float]
-        is_multi ? response.next_float_array : response.next_float
+      when AttributeTypes[:float]   then is_multi ? response.next_float_array : response.next_float
+      when AttributeTypes[:bigint]  then response.next_64bit_int
+      when AttributeTypes[:string]  then response.next
       else
         is_multi ? response.next_int_array   : response.next_int
       end

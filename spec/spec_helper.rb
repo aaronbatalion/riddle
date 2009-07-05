@@ -10,7 +10,7 @@ Spec::Runner.configure do |config|
   sphinx.generate_configuration
   sphinx.index
   
-  config.before :all do
+  config.before :suite do
     `php -f spec/fixtures/data_generator.php`
     sphinx.start
   end
@@ -19,7 +19,7 @@ Spec::Runner.configure do |config|
   #   sphinx.reset
   # end
   
-  config.after :all do
+  config.after :suite do
     sphinx.stop
   end
 end

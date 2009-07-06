@@ -285,8 +285,8 @@ module Riddle
     # related warning, it will be under the <tt>:warning</tt> key. Fatal errors
     # will be described under <tt>:error</tt>.
     #
-    def query(search, index = '*', comments = '', select_list = '*')
-      @queue << query_message(search, index, comments,select_list)
+    def query(search, index = '*', comments = '', overrides = [], select_list = '*')
+      @queue << query_message(search, index, comments, overrides, select_list)
       self.run.first
     end
     
@@ -488,7 +488,7 @@ module Riddle
     end
     
     # Generation of the message to send to Sphinx for a search.
-    def query_message(search, index, comments = '', select_list = "*")
+    def query_message(search, index, comments = '', overrides = [], select_list = "*")
       message = Message.new
       
       # Mode, Limits, Sort Mode
@@ -551,10 +551,22 @@ module Riddle
       
       message.append_string comments
       
-      #Overrides  FIXME implement later
-      message.append_int 0  
+      # attribute overrides
+      message.append_int overrides.length
+      overrides.each do |override|
+        message.append_string override['attr']
+        message.append_int override['type'], override['values'].size
+        override['values'].each do |id, val|
+          message.append_64bit_int id
+          case override['type']
+            when SPH_ATTR_FLOAT  then message.append_float val
+            when SPH_ATTR_BIGINT then message.append_int64 val
+            else                      message.append_int val
+          end
+        end
+      end
       
-      message.append_int select_list.length
+      #select list
       message.append_string select_list
       
       message.to_s

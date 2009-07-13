@@ -64,7 +64,8 @@ module Riddle
       :proximity_bm25 => 0, # SPH_RANK_PROXIMITY_BM25
       :bm25           => 1, # SPH_RANK_BM25
       :none           => 2, # SPH_RANK_NONE
-      :wordcount      => 3  # SPH_RANK_WORDCOUNT
+      :wordcount      => 3, # SPH_RANK_WORDCOUNT
+      :proximity      => 4  # SPH_RANK_PROXIMITY 
     }
     
     SortModes = {
@@ -307,6 +308,8 @@ module Riddle
     # * :around (defaults to 5)
     # * :exact_phrase (defaults to false)
     # * :single_passage (defaults to false)
+    # * :use_boundaries (defaults to false)
+    # * :weight_order (defaults to false)
     #
     # The defaults differ from the official PHP client, as I've opted for
     # semantic HTML markup.
@@ -344,6 +347,8 @@ module Riddle
       options[:around]          ||= 5
       options[:exact_phrase]    ||= false
       options[:single_passage]  ||= false
+      options[:use_boundaries]  ||= false
+      options[:weight_order]    ||= false
       
       response = Response.new request(:excerpt, excerpts_message(options))
       

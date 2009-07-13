@@ -148,6 +148,10 @@ describe Riddle::Client do
     client.queue.last.should  == query_contents(:index)
   end
   
+# These tests are no longer accurate b/c of changes in the php sphinx api.
+# UpdateMessage now returns the # of documents updated.
+# BuildKeywords connects to a running sphinx instance and returns an array
+=begin   
   it "should build a basic update message correctly" do
     client = Riddle::Client.new
     client.send(
@@ -157,7 +161,7 @@ describe Riddle::Client do
       {1 => [191163600]}
     ).should == query_contents(:update_simple)
   end
-  
+
   it "should build a keywords request without hits correctly" do
     client = Riddle::Client.new
     client.send(
@@ -177,7 +181,7 @@ describe Riddle::Client do
       true
     ).should == query_contents(:keywords_with_hits)
   end
-  
+=end  
   it "should timeout after a specified time" do
     client = Riddle::Client.new
     client.port     = 3314

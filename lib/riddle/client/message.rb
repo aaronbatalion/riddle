@@ -56,6 +56,11 @@ module Riddle
         array.each { |item| append_string(item) }
       end
       
+      def append_int_array(array)
+        append_int(array.length)
+        append_ints(*array)
+      end
+      
       # Returns the entire message
       def to_s
         @message

@@ -2,7 +2,7 @@
 include 'sphinxapi.php';
 
 $client = new SphinxClient();
-$client->SetServer("localhost", 3312);
+$client->SetServer("localhost", 3313);
 
 // simple
 $file = fopen("spec/fixtures/data/simple.bin", "w");
